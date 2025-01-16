@@ -6,6 +6,7 @@ import ProductPages from "./components/Products/ProductsPage";
 import SingleProduct from "./components/SingleProduct/SingleProduct";
 import CartPage from "./components/Cart/CartPage";
 import MyOrderPage from "./components/MyOrder/MyOrderPage";
+import LoginPage from "./components/Authentication/LoginPage";
 
 const App = () => {
   return (
@@ -16,7 +17,8 @@ const App = () => {
         {/* <ProductPages /> */}
         {/* <SingleProduct /> */}
         {/* <CartPage /> */}
-        <MyOrderPage />
+        {/* <MyOrderPage /> */}
+        <LoginPage />
       </main>
     </div>
   );
