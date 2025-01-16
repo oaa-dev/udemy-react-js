@@ -4,29 +4,11 @@ import "./LoginPage.css";
 import { useForm } from "react-hook-form";
 
 const LoginPage = () => {
-  //   const nameRef = useRef(null);
-  //   const phoneRef = useRef(null);
-
-  const { register, handleSubmit } = useForm();
-
-  //   const [user, setUser] = useState({
-  //     name: "",
-  //     phone: "",
-  //   });
-
-  //   const handleSubmit = (e) => {
-  //     e.preventDefault();
-
-  //     // const user = {
-  //     //   name: "",
-  //     //   phone: 0,
-  //     // };
-
-  //     // user.name = nameRef.current.value;
-  //     // user.phone = parseInt(phoneRef.current.value);
-
-  //     console.log(user);
-  //   };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = (formData) => console.log(formData);
 
@@ -44,13 +26,19 @@ const LoginPage = () => {
             <input
               type="text"
               id="name"
-              //   ref={nameRef}
-              //   value={user.name}
-              //   onChange={(e) => setUser({ ...user, name: e.target.value })}
-              {...register("name")}
+              {...register("name", { required: true, minLength: 3 })}
               className="form_text_input"
               placeholder="Enter Your Name"
             />
+            {errors.name?.type === "required" && (
+              <em className="form_error">Please enter your name</em>
+            )}
+
+            {errors.name?.type === "minLength" && (
+              <em className="form_error">
+                Name Should be 3 or more characters
+              </em>
+            )}
           </div>
 
           <div>
@@ -58,11 +46,6 @@ const LoginPage = () => {
             <input
               type="number"
               id="phone"
-              //   ref={phoneRef}
-              //   value={user.phone}
-              //   onChange={(e) =>
-              //     setUser({ ...user, phone: parseInt(e.target.value) })
-              //   }
               {...register("phone", { valueAsNumber: true })}
               className="form_text_input"
               placeholder="Enter Your Phone number"
