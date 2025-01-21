@@ -12,7 +12,19 @@ const useData = (endpoint, customParams, deps) => {
       apiClient
         .get(endpoint, customParams)
         .then((res) => {
-          setData(res.data);
+          if (
+            endpoint === "/products" &&
+            data &&
+            data.products &&
+            customParams.params.page !== 1
+          ) {
+            setData((prev) => ({
+              ...prev,
+              products: [...prev.products, ...res.data.products],
+            }));
+          } else {
+            setData(res.data);
+          }
           setIsLoading(false);
         })
         .catch((err) => {
