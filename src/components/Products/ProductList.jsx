@@ -1,19 +1,33 @@
 import React from "react";
 import "./ProductList.css";
 import ProductCard from "./ProductCard";
-import { useState, useEffect } from "react";
-import apiClient from "../../utils/api-client";
+import ProductCardSkeleton from "./ProductCardSkeleton";
+import Pagination from "../Common/Pagination";
+import useData from "../../hooks/useData";
+import { useSearchParams } from "react-router-dom";
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [error, setError] = useState([]);
+  const [search, setSearch] = useSearchParams();
+  const category = search.get("category");
+  const page = search.get("page");
 
-  useEffect(() => {
-    apiClient
-      .get("/products")
-      .then((res) => setProducts(res.data.products))
-      .catch((err) => setError(err.message));
-  }, []);
+  const { data, error, isLoading } = useData(
+    "/products",
+    {
+      params: {
+        category: category,
+        page: page,
+      },
+    },
+    [category, page]
+  );
+  const skeletons = [1, 2, 3, 4, 5, 6, 7, 8];
+
+  const handlePageChange = (page) => {
+    const currentParams = Object.fromEntries([...search]);
+
+    setSearch({ ...currentParams, page: page });
+  };
 
   return (
     <section className="product_list_section">
@@ -31,18 +45,30 @@ const ProductList = () => {
 
       <div className="product_list">
         {error && <em className="form_error">{error}</em>}
-        {products.map((product) => (
-          <ProductCard
-            key={product._id}
-            id={product._id}
-            image={product.images[0]}
-            price={product.price}
-            title={product.title}
-            rating={product.reviews.rate}
-            ratingCounts={product.reviews.count}
-            stock={product.stock}
+        {isLoading
+          ? skeletons.map((n) => <ProductCardSkeleton key={n} />)
+          : data?.products &&
+            data.products.map((product) => (
+              <ProductCard
+                key={product._id}
+                id={product._id}
+                image={product.images[0]}
+                price={product.price}
+                title={product.title}
+                rating={product.reviews.rate}
+                ratingCounts={product.reviews.count}
+                stock={product.stock}
+              />
+            ))}
+
+        {data && (
+          <Pagination
+            totalPosts={data.totalProducts}
+            currentPage={page}
+            postPerPage={8}
+            onClick={handlePageChange}
           />
-        ))}
+        )}
       </div>
     </section>
   );

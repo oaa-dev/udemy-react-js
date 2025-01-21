@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../utils/api-client.js";
 
-const useData = (url) => {
+const useData = (endpoint, customParams, deps) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    apiClient
-      .get(url)
-      .then((res) => setData(res.data))
-      .catch((err) => setError(err.message));
-  }, []);
+  useEffect(
+    () => {
+      setIsLoading(true);
+      apiClient
+        .get(endpoint, customParams)
+        .then((res) => {
+          setData(res.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setError(err.message);
 
-  return { data, error };
+          setIsLoading(false);
+        });
+    },
+    deps ? deps : []
+  );
+
+  return { data, error, isLoading };
 };
 
 export default useData;
