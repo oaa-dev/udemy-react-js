@@ -2,9 +2,10 @@ import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "../../services/userServices";
+import { getUser, login } from "../../services/userServices";
 
 import "./LoginPage.css";
+import { Navigate, useLocation } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
@@ -19,6 +20,7 @@ const schema = z.object({
 
 const LoginPage = () => {
 	const [formError, setFormError] = useState("");
+	const location = useLocation();
 	// let navigate = useNavigate();
 	const {
 		register,
@@ -30,14 +32,19 @@ const LoginPage = () => {
 		try {
 			await login(formData);
 
+			const { state } = location;
 			//   navigate("/");
-			window.location = "/";
+			window.location = state ? state.from : "/";
 		} catch (err) {
 			if (err.response && err.response.status === 400) {
 				setFormError(err.response.data.message);
 			}
 		}
 	};
+
+	if (getUser()) {
+		return <Navigate to="/" />;
+	}
 
 	return (
 		<section className="align_center form_page">
